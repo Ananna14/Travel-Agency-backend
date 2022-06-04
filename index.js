@@ -20,7 +20,8 @@ async function run() {
       await client.connect();
       const database = client.db('travel_client')
       const addServiceCollection = database.collection('services')
-      const singleServiceCollection = database.collection('singleService');
+    //   const singleServiceCollection = database.collection('singleService');
+    const bookingCollection = database.collection('booking');
       const usersCollection = database.collection('users');
     //   const detailsCollection = database.collection('details')
 
@@ -47,6 +48,45 @@ async function run() {
        const service = await addServiceCollection.findOne(query);
        res.json(service);
    })
+     // user Post Api
+     app.post('/users', async (req, res) => {
+        const user = req.body;
+        const result = await usersCollection.insertOne(user);
+        console.log(result);
+        res.json(result);
+    });
+     //BOOKING_sERVICE_GET
+     app.get('/booking', async(req, res) =>{
+        const email = req.query.email;
+        const query = {};
+        // console.log(query);
+        if(email){
+            query = { email: email };
+        }
+        const cursor = bookingCollection.find(query);
+        const booking = await cursor.toArray();
+        res.send(booking);
+      })
+   //BOOKING_sERVICE_POST
+   app.post('/booking', async(req, res)=>{
+     const cards = req.body;
+     // console.log(cards);
+     // res.json({ message: 'hello' })
+     const result = await bookingCollection.insertOne(cards);
+     // console.log(result);
+    
+     res.json(result);
+   })
+
+    // user Put Api
+    // app.put('/users', async (req, res) => {
+    //     const user = req.body;
+    //     const filter = { email: user.email };
+    //     const options = { upsert: true };
+    //     const updateDoc = { $set: user };
+    //     const result = await usersCollection.updateOne(filter, updateDoc, options);
+    //     res.json(result);
+    // });
 
       
     } finally {
