@@ -20,10 +20,8 @@ async function run() {
       await client.connect();
       const database = client.db('travel_client')
       const addServiceCollection = database.collection('services')
-    //   const singleServiceCollection = database.collection('singleService');
     const bookingCollection = database.collection('booking');
       const usersCollection = database.collection('users');
-    //   const detailsCollection = database.collection('details')
 
       //services GET
       app.get('/services', async(req, res)=>{
@@ -55,39 +53,72 @@ async function run() {
         console.log(result);
         res.json(result);
     });
-     //BOOKING_sERVICE_GET
-     app.get('/booking', async(req, res) =>{
-        const email = req.query.email;
-        const query = {};
-        // console.log(query);
-        if(email){
-            query = { email: email };
-        }
-        const cursor = bookingCollection.find(query);
-        const booking = await cursor.toArray();
-        res.send(booking);
-      })
+ 
    //BOOKING_sERVICE_POST
-   app.post('/booking', async(req, res)=>{
-     const cards = req.body;
-     // console.log(cards);
-     // res.json({ message: 'hello' })
-     const result = await bookingCollection.insertOne(cards);
-     // console.log(result);
-    
-     res.json(result);
+   app.post('/confirmOrder', async(req, res)=>{
+    //  const cards = req.body;
+     const result = await bookingCollection.insertOne(req.body);
+    //  console.log(result);
+     res.send(result);
    })
 
-    // user Put Api
-    // app.put('/users', async (req, res) => {
+   //my Orders
+   app.get('/myOrders', async(req, res) =>{
+    const email = req.query.email;
+    const query = { email: email }
+    console.log(query);
+    const cursor = bookingCollection.find(query);
+    const booking = await cursor.toArray();
+    res.json(booking);
+  })
+
+
+   // DELETE-API
+   app.delete('/services/:id', async(req, res)=>{
+    const id = req.params.id;
+    const query = {_id: ObjectId(id) };
+    const result = await bookingCollection.deleteOne(query);
+    // console.log('deleted product',)
+    res.json(result);
+  })
+   // user get api
+   app.get('/users/:email', async (req, res) => {
+    const email = req.params.email;
+    const query = { email: email };
+    const user = await usersCollection.findOne(query);
+   
+    res.json(user);
+});
+   // user Post Api
+    //  app.put('/users', async (req, res) => {
     //     const user = req.body;
-    //     const filter = { email: user.email };
+    //     const filter ={ email: user.email };
     //     const options = { upsert: true };
     //     const updateDoc = { $set: user };
     //     const result = await usersCollection.updateOne(filter, updateDoc, options);
     //     res.json(result);
     // });
+// MAKE_ADMIN
+app.put('/users/admin', async(req, res)=>{
+const user = req.body;
+console.log('put', user);
+const filter = {email: user.email};
+const updateDoc = {$set: {role: 'admin'}};
+const result = await usersCollection.updateOne(filter, updateDoc);
+res.json(result);
+})
 
+// MAKE_ADMIN_EMAIL
+app.get('/users/:email', async(req, res)=>{
+  const email = req.params.email;
+  const query = { email: email };
+  const user = await usersCollection.findOne(query);
+  let isAdmin = false;
+  if(user?.role === 'admin'){
+    isAdmin = true;
+  }
+  res.json({admin: isAdmin});
+})
       
     } finally {
         //   await client.close();
