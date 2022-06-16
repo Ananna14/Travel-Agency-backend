@@ -46,13 +46,6 @@ async function run() {
        const service = await addServiceCollection.findOne(query);
        res.json(service);
    })
-     // user Post Api
-     app.post('/users', async (req, res) => {
-        const user = req.body;
-        const result = await usersCollection.insertOne(user);
-        console.log(result);
-        res.json(result);
-    });
  
    //BOOKING_sERVICE_POST
    app.post('/confirmOrder', async(req, res)=>{
@@ -82,26 +75,37 @@ async function run() {
     res.json(result);
   })
    // user get api
-   app.get('/users/:email', async (req, res) => {
-    const email = req.params.email;
-    const query = { email: email };
-    const user = await usersCollection.findOne(query);
+//    app.get('/users/:email', async (req, res) => {
+//     const email = req.params.email;
+//     const query = { email: email };
+//     const user = await usersCollection.findOne(query);
    
-    res.json(user);
+//     res.json(user);
+// });
+
+  // user Post Api
+  app.post('/users', async (req, res) => {
+    const user = req.body;
+    const result = await usersCollection.insertOne(user);
+    console.log(result);
+    res.json(result);
 });
+
    // user Post Api
-    //  app.put('/users', async (req, res) => {
-    //     const user = req.body;
-    //     const filter ={ email: user.email };
-    //     const options = { upsert: true };
-    //     const updateDoc = { $set: user };
-    //     const result = await usersCollection.updateOne(filter, updateDoc, options);
-    //     res.json(result);
-    // });
+     app.put('/users', async (req, res) => {
+        const user = req.body;
+        // console.log('put', user);
+        const filter ={ email: user.email };
+        const options = { upsert: true };
+        const updateDoc = { $set: user };
+        const result = await usersCollection.updateOne(filter, updateDoc, options);
+        res.json(result);
+    });
+
 // MAKE_ADMIN
 app.put('/users/admin', async(req, res)=>{
 const user = req.body;
-console.log('put', user);
+console.log('put', req.headers.authorization);
 const filter = {email: user.email};
 const updateDoc = {$set: {role: 'admin'}};
 const result = await usersCollection.updateOne(filter, updateDoc);
