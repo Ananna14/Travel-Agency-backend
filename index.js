@@ -54,6 +54,7 @@ async function run() {
           const service = await coursor.toArray();
          res.send(service);
         })
+
         //services  POST
         app.post('/services', async(req, res)=>{
             const service = req.body;
@@ -61,17 +62,26 @@ async function run() {
             const result = await addServiceCollection.insertOne(service);
             // console.log(result);
             res.json(result)
-            // res.send('post hitted')
       })
+
+        // DELETE-API-MY_ORDER
+   app.delete('/services/:id', async(req, res)=>{
+    const id = req.params.id;
+    const query = {_id: ObjectId(id) };
+    const result = await addServiceCollection.deleteOne(query);
+    // console.log('deleted product',)
+    res.json(result);
+  })
+  
    //single-service-load
-   app.get('/services/:id', async(req, res)=>{
-       const id = req.params.id;
-      //  console.log('get load single service', id);
-       const query = {_id: ObjectId(id)};
-       const service = await addServiceCollection.findOne(query);
-       res.json(service);
-   })
- 
+  //  app.get('/services/:id', async(req, res)=>{
+  //      const id = req.params.id;
+  //     //  console.log('get load single service', id);
+  //      const query = {_id: ObjectId(id)};
+  //      const service = await addServiceCollection.findOne(query);
+  //      res.json(service);
+  //  })
+
    //BOOKING_sERVICE_POST
    app.post('/confirmOrder', async(req, res)=>{
     //  const cards = req.body;
@@ -81,7 +91,7 @@ async function run() {
    })
 
    //my Orders
-   app.get('/myOrders', verifyToken, async(req, res) =>{
+   app.get('/myOrders', verifyToken,  async(req, res) =>{
     const email = req.query.email;
     const query = { email: email }
     console.log(query);
@@ -90,15 +100,6 @@ async function run() {
     res.json(booking);
   })
 
-
-   // DELETE-API
-   app.delete('/services/:id', async(req, res)=>{
-    const id = req.params.id;
-    const query = {_id: ObjectId(id) };
-    const result = await bookingCollection.deleteOne(query);
-    // console.log('deleted product',)
-    res.json(result);
-  })
    // user get api
 //    app.get('/users/:email', async (req, res) => {
 //     const email = req.params.email;
