@@ -68,19 +68,19 @@ async function run() {
    app.delete('/services/:id', async(req, res)=>{
     const id = req.params.id;
     const query = {_id: ObjectId(id) };
-    const result = await addServiceCollection.deleteOne(query);
+    const result = await bookingCollection.deleteOne(query);
     // console.log('deleted product',)
     res.json(result);
   })
   
    //single-service-load
-  //  app.get('/services/:id', async(req, res)=>{
-  //      const id = req.params.id;
-  //     //  console.log('get load single service', id);
-  //      const query = {_id: ObjectId(id)};
-  //      const service = await addServiceCollection.findOne(query);
-  //      res.json(service);
-  //  })
+   app.get('/services/:id', async(req, res)=>{
+       const id = req.params.id;
+      //  console.log('get load single service', id);
+       const query = {_id: ObjectId(id)};
+       const service = await addServiceCollection.findOne(query);
+       res.json(service);
+   })
 
    //BOOKING_sERVICE_POST
    app.post('/confirmOrder', async(req, res)=>{
